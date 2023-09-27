@@ -1,3 +1,38 @@
 <resources>
     <string name="app_name">NY Eats</string>
+    <string name="coffee_shops">Coffee Shops</string>
+    <string name="fast_food">Fast Food</string>
+    <string name="restaurants">Restaurants</string>
+
+    <string name="abraco">Abraço</string>
+    <string name="sey_coffee">Sey Coffee</string>
+    <string name="mudspot">Mudspot</string>
+    <string name="devocion">Devoción</string>
+    <string name="felix_roasting_co">Felix Roasting Co.</string>
+    <string name="shake_shack">Shake Shack</string>
+    <string name="sweetgreen">Sweetgreen</string>
+    <string name="rays_pizza">Ray\'s Pizza</string>
+    <string name="wafels_and_dinges">Wafels and Dinges</string>
+    <string name="nathans_famous">Nathan\'s Famous</string>
+    <string name="gage_and_tollner">Gage \&amp; Tollner</string>
+    <string name="crown_shy">Crown Shy</string>
+    <string name="tatiana">Tatiana</string>
+    <string name="gramercy_tavern">Gramercy Tavern</string>
+    <string name="dhamaka">Dhamaka</string>
+
+    <string name="abraco_description">This international coffeehouse draws on Spanish, Italian and Middle Eastern traditions. Snacks, like seasonal frittatas and honey-saffron cake, are offered alongside espresso drinks made from house-roasted beans.</string>
+    <string name="sey_coffee_description">The sleek, lightwood-laden Sey Coffee is a coffee connoisseur’s paradise. A respite from Bushwick’s hippest parties, latest gallery openings and trendy restaurants, it’s a peaceful place where you can watch the coffee being roasted in-house.</string>
+    <string name="mudspot_description">Nina and Greg Northrop started selling coffee out of mobile Mud Trucks a few years ago because they were low on cash. After their truck became a runaway success, they opened the stationary Mudspot. In addition to joe, you’ll find a free-form menu of panini and tapas (the offerings change daily), as well as a selection of beer and wine.</string>
+    <string name="devocion_description">Morning commutes are chaotic, no? That’s why we prefer the tranquility of Devoción, which gives us hope that a vacation is just around the corner. Its Williamsburg location has big windows that are full of light, an island of tropical plants and—up front—a fishtail palm tree. Sip your coffee from one of the signature yellow mugs and note the flavor profile of its Colombian beans, sourced by Medellín-born founder Steve Sutton.</string>
+    <string name="felix_roasting_co_description">There’s so much to poke fun at this chichi coffee shop (like the Pepto-pink details that could double as a Wes Anderson set). But our cynical hearts are melted by its new-age java creations. A standout is the "Deconstructed Espresso Tonic," which comes in a Bordeaux wine glass filled with tonic water, non-alcoholic Campari reduction and lemon-basil leaves.</string>
+    <string name="shake_shack_description">Whatever borough you call home and however refined your palette may be, it’s all but guaranteed that you’ve found burger bliss at one of the 14 NYC locations of Danny Meyer’s patty juggernaut. Burger fiends adore the classic Shackburger, vegetarians cleave to the stupendous ’Shroom Burger, and anyone who can handle lactose has ascended to ice-cream nirvana with an ice-cold custard concrete. This contemporary fast-food staple may be ubiquitous and it’s always packed, but it never fails to satisfy.</string>
+    <string name="sweetgreen_description">We’ve all read think-pieces about “the future of fast food,” but how many earth-friendly, healthy takes on quick eats actually sound good? Luckily, this D.C. import follows through when it comes to totally-stacked salads: the Rad Thai is packed with citrus shrimp, sprouts and sunflower seeds in spicy cashew dressing, while the Hello Portobello piles high raw beets, organic wild rice, shredded kale and miso-sesame-ginger dressing. If you’re like us, you’ll find yourself crawling back tomorrow for lunch.</string>
+    <string name="rays_pizza_description">There are a million spots to grab a slice of pizza and a chicken-parm sub in New York, but at ubiquitous Ray’s, you know it’s going to be good every time. Dozens of slice shops may claim the Ray’ mantle around town, but if your’s costs less than $3, overflows with oozing cheese and delivers a snappy crust, you know you’re at the real Ray’s.</string>
+    <string name="wafels_and_dinges_description">Saturating New York streets with the sweet smells of waffles, bacon and fudge, this truck operation brings Gotham the best of Berlin. If you’ve never indulged, start your new relationship with the “mother of all wafels,” the light and crispy Brussels Wafel, which first landed in NYC for the 1964 World’s Fair.</string>
+    <string name="nathans_famous_description">It’s hard to believe that a humble Coney Island frank stand has become an international institution, with locations in Malaysia, Turkey and Florida. Regardless, New York had it first, and a century later, Nathan’s all-beef tubers are as reliably good as ever.</string>
+    <string name="gage_and_tollner_description">G\&amp; T\'s landmarked interior, which hosted several unrelated businesses before its latest unveiling, is beautiful: enveloped in crimson velvet, gilded and appointed with towering mirrors to reflect all its splendor. The menus are terrific, too, abundant with steaks, chops, seafood towers, sensational fried chicken and best-in-class desserts.</string>
+    <string name="crown_shy_description">Handsome, distinguished, and ultimately as delightful as a twirl around a ball, a visit to this sweeping space, where the spirits are as high as the ceilings, simply always seems important. The soothing Gruyère fritters that helped launch it all in 2019 are still here, as is a version of Crown Shy’s original short rib and a newer pork chop.</string>
+    <string name="tatiana_description">Its ethereal space, where sunshine streams in by day, and light fixtures fashioned after clouds are suspended overhead, is as comfortable as it is cooly grand. Its Afro-Caribbean-influenced menu lists one stunner after another, and its short rib pastrami is New York City’s can’t miss dish.</string>
+    <string name="gramercy_tavern_description">Big night out atmosphere crackles in the dining room in the back and the tavern space up front, with a bar that feels like the place to be. The dining room’s $168 five-course tasting, which presently includes lamb or a roasted duck breast, is splendid for a splurge, or you can order à la carte in the (also lovely) tavern section, where every main is $38 or less. </string>
+    <string name="dhamaka_description">The unstoppable Unapologetic Foods team spotlights what they refer to as “the forgotten side of India.” Dhamaka recently updated most of its menu, but favorites like the gurda kapoora (goat kidney, testicles, red onion and pao)  and champaran meat (mutton, garlic, red chili) remain.</string>
 </resources>

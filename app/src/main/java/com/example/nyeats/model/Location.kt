@@ -11,7 +11,7 @@ data class Location(
     )
 
 object LocationsRepository {
-    val coffeeShopsList = listOf(
+    val coffeeShops = listOf(
         Location(
             name = R.string.abraco,
             description = R.string.abraco_description,
@@ -39,7 +39,7 @@ object LocationsRepository {
         )
     )
 
-    val fastFoodLocations = listOf(
+    val fastFood = listOf(
         Location(
             name = R.string.shake_shack,
             description = R.string.shake_shack_description,
@@ -67,7 +67,7 @@ object LocationsRepository {
         )
     )
 
-    val restaurantLocations = listOf(
+    val restaurants = listOf(
         Location(
             name = R.string.gage_and_tollner,
             description = R.string.gage_and_tollner_description,

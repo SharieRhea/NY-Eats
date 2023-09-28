@@ -85,6 +85,7 @@ fun NYEatsTheme(
 
   MaterialTheme(
     colorScheme = colors,
+    typography = Typography,
     content = content
   )
 }

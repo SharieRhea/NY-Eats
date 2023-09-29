@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">NY Eats</string>
+
+    <string name="categories_screen">Categories</string>
+    <string name="locations_screen">Locations</string>
+    <string name="details_screen">Detail</string>
+
     <string name="coffee_shops">Coffee Shops</string>
     <string name="fast_food">Fast Food</string>
     <string name="restaurants">Restaurants</string>

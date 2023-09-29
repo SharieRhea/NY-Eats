@@ -39,19 +39,29 @@ import com.example.nyeats.model.Location
 import com.example.nyeats.model.LocationsRepository.coffeeShops
 import com.example.nyeats.ui.theme.NYEatsTheme
 
+// Initialize a viewModel for all functions to use. todo: better to be passed into functions?
 val viewModel = NYEatsViewModel()
 
+/**
+ * Enums for the various types of screens in the NYEats app.
+ */
 enum class ScreenName(@StringRes val title: Int) {
     Categories(R.string.categories_screen),
     Locations(R.string.locations_screen),
     Detail(R.string.details_screen)
 }
 
+/**
+ * The main composable for the NYEats app. Handles navigation and uiState.
+ */
 @Composable
 fun NYEats(modifier: Modifier = Modifier) {
+    // Initialize a navHostController for navigation
     val navController: NavHostController = rememberNavController()
+    // Initialize a backStack for backwards navigation
     val backStackEntry by navController.currentBackStackEntryAsState()
 
+    // Default screen should always be categories, with category and location starting as null
     val currentScreen = ScreenName.valueOf(backStackEntry?.destination?.route ?: ScreenName.Categories.name)
 
     val uiState = viewModel.uiState.collectAsState().value
@@ -83,6 +93,9 @@ fun NYEats(modifier: Modifier = Modifier) {
     }
 }
 
+/**
+ * A category card to display an icon and name.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryItem(
@@ -112,6 +125,9 @@ fun CategoryItem(
     }
 }
 
+/**
+ * Lazy column of the full list of category cards.
+ */
 @Composable
 fun CategoriesList(
     list: List<Category>,
@@ -132,6 +148,9 @@ fun CategoriesList(
     }
 }
 
+/**
+ * Displays everything for the categories screen: CategoriesList,
+ */
 @Composable
 fun CategoryScreen(
     onCategoryClicked: (Category) -> Unit,
@@ -143,6 +162,9 @@ fun CategoryScreen(
     )
 }
 
+/**
+ * Displays everything for the locations screen: LocationsList,
+ */
 @Composable
 fun LocationsScreen(
     category: Category,
@@ -152,6 +174,9 @@ fun LocationsScreen(
     LocationsList(list = category.list, onClick = onLocationClicked)
 }
 
+/**
+ * Displays info for a single location, including name, description, and image.
+ */
 @Composable
 fun DetailsScreen(
     location: Location,
@@ -184,6 +209,9 @@ fun DetailsScreen(
     }
 }
 
+/**
+ * Lazy column of the full list of location cards.
+ */
 @Composable
 fun LocationsList(
     list: List<Location>,
@@ -204,6 +232,9 @@ fun LocationsList(
     }
 }
 
+/**
+ * A location card to display an small image and name.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LocationItem(
@@ -230,7 +261,7 @@ fun LocationItem(
             )
             Text(
                 text = stringResource(id = location.name),
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.titleLarge
             )
         }
     }
@@ -275,30 +306,3 @@ fun ListsPreview() {
         LocationsList(list = coffeeShops, {})
     }
 }
-
-
-/*
-@Composable
-fun <Model> YourListName(
-    list: List<Model>,
-    itemUi: @Composable (Model) -> Unit
-) {
-    LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        items(list) {
-            itemUi(it)
-        }
-    }
-}
-
-@Composable
-fun CategoryItem(category: Category) {
-    Text(text = "this is a category")
-}
-
-@Composable
-fun ExampleOfCallingTheList(category: Category) {
-    YourListName<Category>(
-        list = listOf(),
-        itemUi = { CategoryItem(category = it) }
-    )
-}*/

@@ -4,12 +4,19 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.example.nyeats.R
 
+/**
+ * Data class for a Location. A Location is one establishment in a given category. A location has a
+ * name, description, and image.
+ */
 data class Location(
     @StringRes val name: Int,
     @StringRes val description: Int,
     @DrawableRes val image: Int
     )
 
+/**
+ * Initializes a list of coffee shops.
+ */
 object LocationsRepository {
     val coffeeShops = listOf(
         Location(
@@ -39,6 +46,9 @@ object LocationsRepository {
         )
     )
 
+    /**
+     * Initializes a list of fast food places.
+     */
     val fastFood = listOf(
         Location(
             name = R.string.shake_shack,
@@ -67,6 +77,9 @@ object LocationsRepository {
         )
     )
 
+    /**
+     * Initializes a list of restaurants.
+     */
     val restaurants = listOf(
         Location(
             name = R.string.gage_and_tollner,

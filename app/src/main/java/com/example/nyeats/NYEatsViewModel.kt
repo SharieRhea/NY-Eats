@@ -7,13 +7,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
+/**
+ * A ViewModel for the NYEats app.
+ */
 class NYEatsViewModel : ViewModel() {
 
+    // Initialize uiState for the ViewModel to use
     private val _uiState = MutableStateFlow(NYEatsUiState())
     val uiState: StateFlow<NYEatsUiState> = _uiState
-
-
-    // yourViewModel.category.observe(viewLifecycleOwner) { category -> {  will be invoked once category changed }
 
     init {
         initializeUiState()
@@ -23,6 +24,9 @@ class NYEatsViewModel : ViewModel() {
         _uiState.value = NYEatsUiState()
     }
 
+    /**
+     * Updates the value of currentCategory.
+     */
     fun updateCurrentCategory(category: Category) {
         _uiState.update {
             it.copy(
@@ -31,6 +35,9 @@ class NYEatsViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Updates the value of currentLocation.
+     */
     fun updateCurrentLocation(location: Location) {
         _uiState.update {
             it.copy(

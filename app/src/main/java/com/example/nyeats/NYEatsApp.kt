@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +40,14 @@ import com.example.nyeats.model.Location
 import com.example.nyeats.model.LocationsRepository.coffeeShops
 import com.example.nyeats.ui.theme.NYEatsTheme
 
+/*
+    Note:
+        - refactor into multiple files?
+        - fragments?
+        - still need to implement back button behavior
+        - fix: crash on click category in emulator, preview works fine?
+ */
+
 // Initialize a viewModel for all functions to use. todo: better to be passed into functions?
 val viewModel = NYEatsViewModel()
 
@@ -61,14 +70,11 @@ fun NYEats(modifier: Modifier = Modifier) {
     // Initialize a backStack for backwards navigation
     val backStackEntry by navController.currentBackStackEntryAsState()
 
-    // Default screen should always be categories, with category and location starting as null
-    val currentScreen = ScreenName.valueOf(backStackEntry?.destination?.route ?: ScreenName.Categories.name)
-
     val uiState = viewModel.uiState.collectAsState().value
 
     NavHost(
         navController = navController,
-        startDestination = currentScreen.name,
+        startDestination = ScreenName.Categories.name,
         modifier = Modifier
     ) {
         composable(route = ScreenName.Categories.name) {
@@ -81,14 +87,18 @@ fun NYEats(modifier: Modifier = Modifier) {
         }
         composable(route = ScreenName.Locations.name) {
             LocationsScreen(
-                category = uiState.currentCategory!!,
+                category = uiState.currentCategory,
                 onLocationClicked = {
                     viewModel.updateCurrentLocation(it)
                     navController.navigate(ScreenName.Detail.name)
-                })
+                },
+                onBackButtonClicked = {navController.popBackStack()})
         }
         composable(route = ScreenName.Detail.name) {
-            DetailsScreen(location = uiState.currentLocation!!)
+            DetailsScreen(
+                location = uiState.currentLocation,
+                onBackButtonClicked = {navController.popBackStack()}
+            )
         }
     }
 }
@@ -103,7 +113,6 @@ fun CategoryItem(
     onCategoryClicked: (Category) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     Card(
         onClick = { onCategoryClicked(category) },
         modifier = modifier
@@ -169,9 +178,13 @@ fun CategoryScreen(
 fun LocationsScreen(
     category: Category,
     onLocationClicked: (Location) -> Unit,
+    onBackButtonClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LocationsList(list = category.list, onClick = onLocationClicked)
+    Column() {
+        LocationsList(list = category.list, onClick = onLocationClicked)
+        BackButton(onClick = onBackButtonClicked)
+    }
 }
 
 /**
@@ -180,6 +193,7 @@ fun LocationsScreen(
 @Composable
 fun DetailsScreen(
     location: Location,
+    onBackButtonClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -206,6 +220,7 @@ fun DetailsScreen(
                     end = dimensionResource(id = R.dimen.details_screen_spacing)
                 )
         )
+        BackButton(onClick = onBackButtonClicked)
     }
 }
 
@@ -267,6 +282,18 @@ fun LocationItem(
     }
 }
 
+@Composable
+fun BackButton(
+    onClick: () -> Unit
+) {
+    IconButton(onClick = onClick) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_back_arrow),
+            contentDescription = null
+        )
+    }
+}
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun NYEatsPreview() {
@@ -279,7 +306,7 @@ fun NYEatsPreview() {
 @Composable
 fun DetailsScreenPreview() {
     NYEatsTheme {
-        DetailsScreen(location = coffeeShops[0])
+        DetailsScreen(location = coffeeShops[0], onBackButtonClicked = {})
     }
 }
 

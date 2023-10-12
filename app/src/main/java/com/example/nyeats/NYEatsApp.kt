@@ -1,17 +1,24 @@
 package com.example.nyeats
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,9 +29,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.ImageShader
+import androidx.compose.ui.graphics.ShaderBrush
+import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,9 +56,7 @@ import com.example.nyeats.ui.theme.NYEatsTheme
 /*
     Note:
         - refactor into multiple files?
-        - fragments?
-        - still need to implement back button behavior
-        - fix: crash on click category in emulator, preview works fine?
+        - replace hardcoded color and dimen values
  */
 
 // Initialize a viewModel for all functions to use. todo: better to be passed into functions?
@@ -75,14 +86,15 @@ fun NYEats(modifier: Modifier = Modifier) {
     NavHost(
         navController = navController,
         startDestination = ScreenName.Categories.name,
-        modifier = Modifier
+        modifier = modifier
     ) {
         composable(route = ScreenName.Categories.name) {
             CategoryScreen(
                 onCategoryClicked = {
                     viewModel.updateCurrentCategory(it)
                     navController.navigate(ScreenName.Locations.name)
-                }
+                },
+                modifier = modifier
             )
         }
         composable(route = ScreenName.Locations.name) {
@@ -115,20 +127,29 @@ fun CategoryItem(
 ) {
     Card(
         onClick = { onCategoryClicked(category) },
+        elevation = CardDefaults.cardElevation(10.dp),
         modifier = modifier
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.category_card_inner_padding))
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .heightIn(max = 150.dp)
         ) {
-            Icon(
-                painter = painterResource(id = category.icon),
+            Image(
+                painter = painterResource(id = category.backgroundImage),
                 contentDescription = null,
-                modifier = Modifier.padding(end = dimensionResource(id = R.dimen.category_card_inner_padding))
+                contentScale= ContentScale.Crop,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color.Black.copy(alpha = 0.5f))
             )
             Text(
                 text = stringResource(id = category.name),
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                color = Color.White
             )
         }
     }
@@ -144,7 +165,9 @@ fun CategoriesList(
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.item_spacing))
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.item_spacing)),
+        contentPadding = PaddingValues(20.dp),
+        modifier = modifier
     ) {
         items(list) {
             CategoryItem(
@@ -167,7 +190,8 @@ fun CategoryScreen(
 ) {
     CategoriesList(
         list = categories,
-        onClick = onCategoryClicked
+        onClick = onCategoryClicked,
+        modifier = modifier
     )
 }
 
@@ -259,24 +283,37 @@ fun LocationItem(
 ) {
     Card(
         onClick = { onLocationClicked(location) },
-        modifier = modifier
+        elevation = CardDefaults.cardElevation(10.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+        modifier = Modifier
+            .heightIn(max = 100.dp)
+            .fillMaxWidth()
     ) {
         Row(
-            modifier = Modifier.padding(dimensionResource(R.dimen.category_card_inner_padding)),
+            modifier = modifier,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = location.image),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .padding(end = dimensionResource(id = R.dimen.category_card_inner_padding))
-                    .size(48.dp)
-                    .clip(CircleShape)
-            )
+            Box(
+                modifier = Modifier,
+            ) {
+                val imageBrush = ShaderBrush(ImageShader(ImageBitmap.imageResource(id = location.image)))
+                Canvas(
+                    // todo: find way to not zoom in image so much
+                    modifier = Modifier.size(100.dp),
+                    onDraw = {
+                        translate(left = -50f) {
+                            scale(scale = 2f) {
+                                drawCircle(imageBrush)
+                            }
+                        }
+                    }
+                )
+            }
+            Spacer(modifier = Modifier.padding(24.dp))
             Text(
                 text = stringResource(id = location.name),
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
     }
@@ -313,8 +350,14 @@ fun DetailsScreenPreview() {
 @Preview
 @Composable
 fun CategoryItemPreview() {
+    val category = Category(
+        name = R.string.coffee_shops,
+        icon = R.drawable.ic_coffee,
+        backgroundImage = R.drawable.felixroastingco,
+        list = listOf()
+    )
     NYEatsTheme {
-        CategoryItem(category = categories[0], onCategoryClicked = {} )
+        CategoryItem(category = category, onCategoryClicked = {} )
     }
 }
 

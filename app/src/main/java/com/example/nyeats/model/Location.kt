@@ -88,7 +88,7 @@ object LocationsRepository {
         ),
         Location(
             name = R.string.crown_shy,
-            description = R.string.crown_shy,
+            description = R.string.crown_shy_description,
             image = R.drawable.crownshy
         ),
         Location(

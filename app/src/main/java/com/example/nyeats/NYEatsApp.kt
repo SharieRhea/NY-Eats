@@ -1,6 +1,12 @@
 package com.example.nyeats
 
-import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -10,6 +16,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -20,8 +27,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +38,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ImageShader
 import androidx.compose.ui.graphics.ShaderBrush
-import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
@@ -65,10 +69,8 @@ val viewModel = NYEatsViewModel()
 /**
  * Enums for the various types of screens in the NYEats app.
  */
-enum class ScreenName(@StringRes val title: Int) {
-    Categories(R.string.categories_screen),
-    Locations(R.string.locations_screen),
-    Detail(R.string.details_screen)
+enum class ScreenName {
+    Categories, Locations, Detail
 }
 
 /**
@@ -82,19 +84,61 @@ fun NYEats(modifier: Modifier = Modifier) {
     val backStackEntry by navController.currentBackStackEntryAsState()
 
     val uiState = viewModel.uiState.collectAsState().value
-
+    
     NavHost(
         navController = navController,
         startDestination = ScreenName.Categories.name,
+        enterTransition = {
+            fadeIn(
+                animationSpec = tween(
+                    300, easing = LinearEasing
+                )
+            ) + slideIntoContainer(
+                animationSpec = tween(300, easing = EaseIn),
+                towards = AnimatedContentTransitionScope.SlideDirection.Up
+            )
+        },
+        exitTransition = {
+            fadeOut(
+                animationSpec = tween(
+                    300, easing = LinearEasing
+                )
+            ) + slideOutOfContainer(
+                animationSpec = tween(300, easing = EaseOut),
+                towards = AnimatedContentTransitionScope.SlideDirection.Up
+            )
+        },
+        popEnterTransition = {
+            fadeIn(
+                animationSpec = tween(
+                    300, easing = LinearEasing
+                )
+            ) + slideIntoContainer(
+                animationSpec = tween(300, easing = EaseIn),
+                towards = AnimatedContentTransitionScope.SlideDirection.Down
+            )
+        },
+        popExitTransition = {
+            fadeOut(
+                animationSpec = tween(
+                    300, easing = LinearEasing
+                )
+            ) + slideOutOfContainer(
+                animationSpec = tween(300, easing = EaseIn),
+                towards = AnimatedContentTransitionScope.SlideDirection.Down
+            )
+        },
         modifier = modifier
     ) {
-        composable(route = ScreenName.Categories.name) {
+        composable(
+            route = ScreenName.Categories.name,
+        ) {
             CategoryScreen(
                 onCategoryClicked = {
                     viewModel.updateCurrentCategory(it)
                     navController.navigate(ScreenName.Locations.name)
                 },
-                modifier = modifier
+                modifier = Modifier.fillMaxHeight()
             )
         }
         composable(route = ScreenName.Locations.name) {
@@ -104,12 +148,13 @@ fun NYEats(modifier: Modifier = Modifier) {
                     viewModel.updateCurrentLocation(it)
                     navController.navigate(ScreenName.Detail.name)
                 },
-                onBackButtonClicked = {navController.popBackStack()})
+                onBackButtonClicked = {navController.popBackStack()},
+                modifier = Modifier.fillMaxHeight()
+            )
         }
         composable(route = ScreenName.Detail.name) {
             DetailsScreen(
-                location = uiState.currentLocation,
-                onBackButtonClicked = {navController.popBackStack()}
+                location = uiState.currentLocation
             )
         }
     }
@@ -165,7 +210,7 @@ fun CategoriesList(
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.item_spacing)),
+        verticalArrangement = Arrangement.SpaceEvenly,
         contentPadding = PaddingValues(20.dp),
         modifier = modifier
     ) {
@@ -206,8 +251,11 @@ fun LocationsScreen(
     modifier: Modifier = Modifier
 ) {
     Column() {
-        LocationsList(list = category.list, onClick = onLocationClicked)
-        BackButton(onClick = onBackButtonClicked)
+        LocationsList(
+            list = category.list,
+            onClick = onLocationClicked,
+            modifier = modifier
+        )
     }
 }
 
@@ -217,11 +265,11 @@ fun LocationsScreen(
 @Composable
 fun DetailsScreen(
     location: Location,
-    onBackButtonClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.details_screen_spacing))
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.details_screen_spacing)),
+        modifier = modifier
     ) {
         Image(
             painter = painterResource(id = location.image),
@@ -233,18 +281,19 @@ fun DetailsScreen(
         Text(
             text = stringResource(id = location.name),
             style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(start = dimensionResource(id = R.dimen.details_screen_spacing))
         )
         Text(
             text = stringResource(id = location.description),
             style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
                 .padding(
                     start = dimensionResource(id = R.dimen.details_screen_spacing),
                     end = dimensionResource(id = R.dimen.details_screen_spacing)
                 )
         )
-        BackButton(onClick = onBackButtonClicked)
     }
 }
 
@@ -258,14 +307,14 @@ fun LocationsList(
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.item_spacing))
+        verticalArrangement = Arrangement.SpaceEvenly,
+        contentPadding = PaddingValues(20.dp),
+        modifier = modifier
     ) {
         items(list) {
             LocationItem(
                 location = it,
-                onLocationClicked = onClick,
-                modifier = Modifier
-                    .fillMaxWidth()
+                onLocationClicked = onClick
             )
         }
     }
@@ -298,36 +347,25 @@ fun LocationItem(
             ) {
                 val imageBrush = ShaderBrush(ImageShader(ImageBitmap.imageResource(id = location.image)))
                 Canvas(
-                    // todo: find way to not zoom in image so much
-                    modifier = Modifier.size(100.dp),
+                    modifier = Modifier.size(200.dp),
                     onDraw = {
-                        translate(left = -50f) {
-                            scale(scale = 2f) {
-                                drawCircle(imageBrush)
-                            }
+                        translate(left = -200f) {
+                            drawCircle(imageBrush, radius = 300f)
                         }
                     }
                 )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(modifier = Modifier.padding(80.dp))
+                    Text(
+                        text = stringResource(id = location.name),
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
             }
-            Spacer(modifier = Modifier.padding(24.dp))
-            Text(
-                text = stringResource(id = location.name),
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
         }
-    }
-}
-
-@Composable
-fun BackButton(
-    onClick: () -> Unit
-) {
-    IconButton(onClick = onClick) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_back_arrow),
-            contentDescription = null
-        )
     }
 }
 
@@ -343,7 +381,7 @@ fun NYEatsPreview() {
 @Composable
 fun DetailsScreenPreview() {
     NYEatsTheme {
-        DetailsScreen(location = coffeeShops[0], onBackButtonClicked = {})
+        DetailsScreen(location = coffeeShops[0])
     }
 }
 

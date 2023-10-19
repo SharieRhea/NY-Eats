@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
@@ -29,6 +30,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -44,6 +46,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -70,92 +73,178 @@ val viewModel = NYEatsViewModel()
  * Enums for the various types of screens in the NYEats app.
  */
 enum class ScreenName {
-    Categories, Locations, Detail
+    Categories, Locations, Detail,
+    CategoriesAndLocations, LocationsAndDetails
 }
 
 /**
  * The main composable for the NYEats app. Handles navigation and uiState.
  */
 @Composable
-fun NYEats(modifier: Modifier = Modifier) {
+fun NYEats(
+    windowSize: WindowWidthSizeClass,
+    modifier: Modifier = Modifier) {
     // Initialize a navHostController for navigation
     val navController: NavHostController = rememberNavController()
     // Initialize a backStack for backwards navigation
     val backStackEntry by navController.currentBackStackEntryAsState()
 
     val uiState = viewModel.uiState.collectAsState().value
-    
-    NavHost(
-        navController = navController,
-        startDestination = ScreenName.Categories.name,
-        enterTransition = {
-            fadeIn(
-                animationSpec = tween(
-                    300, easing = LinearEasing
+
+    if (windowSize == WindowWidthSizeClass.Expanded) {
+        NavHost(
+            navController = navController,
+            startDestination = ScreenName.Categories.name,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideIntoContainer(
+                    animationSpec = tween(300, easing = EaseIn),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start
                 )
-            ) + slideIntoContainer(
-                animationSpec = tween(300, easing = EaseIn),
-                towards = AnimatedContentTransitionScope.SlideDirection.Up
-            )
-        },
-        exitTransition = {
-            fadeOut(
-                animationSpec = tween(
-                    300, easing = LinearEasing
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideOutOfContainer(
+                    animationSpec = tween(300, easing = EaseOut),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start
                 )
-            ) + slideOutOfContainer(
-                animationSpec = tween(300, easing = EaseOut),
-                towards = AnimatedContentTransitionScope.SlideDirection.Up
-            )
-        },
-        popEnterTransition = {
-            fadeIn(
-                animationSpec = tween(
-                    300, easing = LinearEasing
+            },
+            popEnterTransition = {
+                fadeIn(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideIntoContainer(
+                    animationSpec = tween(300, easing = EaseIn),
+                    towards = AnimatedContentTransitionScope.SlideDirection.End
                 )
-            ) + slideIntoContainer(
-                animationSpec = tween(300, easing = EaseIn),
-                towards = AnimatedContentTransitionScope.SlideDirection.Down
-            )
-        },
-        popExitTransition = {
-            fadeOut(
-                animationSpec = tween(
-                    300, easing = LinearEasing
+            },
+            popExitTransition = {
+                fadeOut(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideOutOfContainer(
+                    animationSpec = tween(300, easing = EaseIn),
+                    towards = AnimatedContentTransitionScope.SlideDirection.End
                 )
-            ) + slideOutOfContainer(
-                animationSpec = tween(300, easing = EaseIn),
-                towards = AnimatedContentTransitionScope.SlideDirection.Down
-            )
-        },
-        modifier = modifier
-    ) {
-        composable(
-            route = ScreenName.Categories.name,
+            },
+            modifier = modifier
         ) {
-            CategoryScreen(
-                onCategoryClicked = {
-                    viewModel.updateCurrentCategory(it)
-                    navController.navigate(ScreenName.Locations.name)
-                },
-                modifier = Modifier.fillMaxHeight()
-            )
+            composable(
+                route = ScreenName.Categories.name,
+            ) {
+                CategoryScreen(
+                    onCategoryClicked = {
+                        viewModel.updateCurrentCategory(it)
+                        navController.navigate(ScreenName.CategoriesAndLocations.name)
+                    },
+                    modifier = Modifier.fillMaxHeight()
+                )
+            }
+            composable(
+                route = ScreenName.CategoriesAndLocations.name,
+            ) {
+                CategoriesAndLocationsScreen(
+                    onCategoryClicked = {
+                        viewModel.updateCurrentCategory(it)
+                    },
+                    onLocationClicked = {
+                        viewModel.updateCurrentLocation(it)
+                        navController.navigate(ScreenName.LocationsAndDetails.name)
+                    },
+                    currentCategory = uiState.currentCategory)
+            }
+            composable(
+                route = ScreenName.LocationsAndDetails.name
+            ) {
+                LocationsAndDetailsScreen(
+                    onLocationClicked = {
+                        viewModel.updateCurrentLocation(it)
+                    },
+                    currentCategory = uiState.currentCategory,
+                    currentLocation = uiState.currentLocation
+                )
+            }
         }
-        composable(route = ScreenName.Locations.name) {
-            LocationsScreen(
-                category = uiState.currentCategory,
-                onLocationClicked = {
-                    viewModel.updateCurrentLocation(it)
-                    navController.navigate(ScreenName.Detail.name)
-                },
-                onBackButtonClicked = {navController.popBackStack()},
-                modifier = Modifier.fillMaxHeight()
-            )
-        }
-        composable(route = ScreenName.Detail.name) {
-            DetailsScreen(
-                location = uiState.currentLocation
-            )
+    } else {
+        NavHost(
+            navController = navController,
+            startDestination = ScreenName.Categories.name,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideIntoContainer(
+                    animationSpec = tween(300, easing = EaseIn),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Up
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideOutOfContainer(
+                    animationSpec = tween(300, easing = EaseOut),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Up
+                )
+            },
+            popEnterTransition = {
+                fadeIn(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideIntoContainer(
+                    animationSpec = tween(300, easing = EaseIn),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Down
+                )
+            },
+            popExitTransition = {
+                fadeOut(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideOutOfContainer(
+                    animationSpec = tween(300, easing = EaseIn),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Down
+                )
+            },
+            modifier = modifier
+        ) {
+            composable(
+                route = ScreenName.Categories.name,
+            ) {
+                CategoryScreen(
+                    onCategoryClicked = {
+                        viewModel.updateCurrentCategory(it)
+                        navController.navigate(ScreenName.Locations.name)
+                    },
+                    modifier = Modifier.fillMaxHeight()
+                )
+            }
+            composable(route = ScreenName.Locations.name) {
+                LocationsScreen(
+                    category = uiState.currentCategory,
+                    onLocationClicked = {
+                        viewModel.updateCurrentLocation(it)
+                        navController.navigate(ScreenName.Detail.name)
+                    },
+                    modifier = Modifier.fillMaxHeight()
+                )
+            }
+            composable(route = ScreenName.Detail.name) {
+                DetailsScreen(
+                    location = uiState.currentLocation
+                )
+            }
         }
     }
 }
@@ -173,7 +262,7 @@ fun CategoryItem(
     Card(
         onClick = { onCategoryClicked(category) },
         elevation = CardDefaults.cardElevation(10.dp),
-        modifier = modifier
+        modifier = Modifier.width(500.dp)
     ) {
         Box(
             contentAlignment = Alignment.Center,
@@ -233,11 +322,66 @@ fun CategoryScreen(
     onCategoryClicked: (Category) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    CategoriesList(
-        list = categories,
-        onClick = onCategoryClicked,
-        modifier = modifier
-    )
+    Box(
+        contentAlignment = Alignment.Center
+    ) {
+        CategoriesList(
+            list = categories,
+            onClick = onCategoryClicked,
+            modifier = modifier
+        )
+    }
+}
+
+@Composable
+fun CategoriesAndLocationsScreen(
+    onCategoryClicked: (Category) -> Unit,
+    onLocationClicked: (Location) -> Unit,
+    currentCategory: Category,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceAround,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        CategoryScreen(
+            onCategoryClicked = onCategoryClicked,
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f)
+        )
+        LocationsScreen(
+            category = currentCategory,
+            onLocationClicked = onLocationClicked,
+            modifier = Modifier
+                .fillMaxHeight()
+        )
+    }
+}
+
+@Composable
+fun LocationsAndDetailsScreen(
+    onLocationClicked: (Location) -> Unit,
+    currentCategory: Category,
+    currentLocation: Location
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        LocationsScreen(
+            category = currentCategory,
+            onLocationClicked = onLocationClicked,
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f)
+        )
+        Spacer(modifier = Modifier.padding(20.dp))
+        DetailsScreen(
+            location = currentLocation,
+            modifier = Modifier
+                .weight(1f)
+        )
+    }
 }
 
 /**
@@ -247,10 +391,11 @@ fun CategoryScreen(
 fun LocationsScreen(
     category: Category,
     onLocationClicked: (Location) -> Unit,
-    onBackButtonClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column() {
+    Box(
+        contentAlignment = Alignment.Center
+    ) {
         LocationsList(
             list = category.list,
             onClick = onLocationClicked,
@@ -269,7 +414,7 @@ fun DetailsScreen(
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.details_screen_spacing)),
-        modifier = modifier
+        modifier = Modifier.fillMaxSize()
     ) {
         Image(
             painter = painterResource(id = location.image),
@@ -277,6 +422,7 @@ fun DetailsScreen(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
+                .heightIn(max = 500.dp)
         )
         Text(
             text = stringResource(id = location.name),
@@ -336,7 +482,7 @@ fun LocationItem(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
         modifier = Modifier
             .heightIn(max = 100.dp)
-            .fillMaxWidth()
+            .width(350.dp)
     ) {
         Row(
             modifier = modifier,
@@ -373,18 +519,43 @@ fun LocationItem(
 @Composable
 fun NYEatsPreview() {
     NYEatsTheme {
-        NYEats()
+        NYEats(windowSize = WindowWidthSizeClass.Compact)
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true, showSystemUi = true, device = Devices.TABLET)
+@Composable
+fun NYEatsExpandedPreview() {
+    NYEatsTheme {
+        NYEats(windowSize = WindowWidthSizeClass.Expanded)
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true, device = Devices.TABLET)
+@Composable
+fun NYEatsCategoriesAndLocationsExpandedPreview() {
+    NYEatsTheme {
+        CategoriesAndLocationsScreen({}, {}, categories[0])
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true, device = Devices.TABLET)
+@Composable
+fun NYEatsLocationsAndDetailsExpandedPreview() {
+    NYEatsTheme {
+        LocationsAndDetailsScreen({}, categories[0], coffeeShops[2])
+    }
+}
+
+/*@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun DetailsScreenPreview() {
     NYEatsTheme {
         DetailsScreen(location = coffeeShops[0])
     }
-}
+}*/
 
+/*
 @Preview
 @Composable
 fun CategoryItemPreview() {
@@ -411,6 +582,6 @@ fun LocationItemPreview() {
 @Composable
 fun ListsPreview() {
     NYEatsTheme {
-        LocationsList(list = coffeeShops, {})
+        LocationsList(list = coffeeShops, {}, modifier = Modifier.fillMaxSize())
     }
-}
+}*/

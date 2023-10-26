@@ -36,17 +36,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ImageShader
 import androidx.compose.ui.graphics.ShaderBrush
-import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -64,6 +64,11 @@ import com.example.nyeats.ui.theme.NYEatsTheme
     Note:
         - refactor into multiple files?
         - replace hardcoded color and dimen values
+        - replace images with free to use
+        - replace names and descriptions
+        - add content descriptions
+        - check accessibility
+        - write tests?
  */
 
 // Initialize a viewModel for all functions to use. todo: better to be passed into functions?
@@ -485,21 +490,31 @@ fun LocationItem(
             .width(350.dp)
     ) {
         Row(
-            modifier = modifier,
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
             Box(
-                modifier = Modifier,
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.CenterStart
             ) {
-                val imageBrush = ShaderBrush(ImageShader(ImageBitmap.imageResource(id = location.image)))
-                Canvas(
-                    modifier = Modifier.size(200.dp),
-                    onDraw = {
-                        translate(left = -200f) {
-                            drawCircle(imageBrush, radius = 300f)
-                        }
-                    }
-                )
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    val imageBrush =
+                        ShaderBrush(ImageShader(ImageBitmap.imageResource(id = location.image)))
+                    Canvas(
+                        onDraw = {
+                            withTransform({
+                                scale(0.5f, 0.5f)
+                                translate(left = -size.width * 1.15f, top = -size.height * 1.15f)
+                            }) {
+                                drawCircle(imageBrush, radius = size.width, center = Offset(x = size.width / 2, y = size.width / 2))
+                            }
+                        },
+                        modifier = Modifier.size(500.dp)
+                    )
+                }
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -523,29 +538,29 @@ fun NYEatsPreview() {
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true, device = Devices.TABLET)
+/*@Preview(showBackground = true, showSystemUi = true, device = Devices.TABLET)
 @Composable
 fun NYEatsExpandedPreview() {
     NYEatsTheme {
         NYEats(windowSize = WindowWidthSizeClass.Expanded)
     }
-}
+}*/
 
-@Preview(showBackground = true, showSystemUi = true, device = Devices.TABLET)
+/*@Preview(showBackground = true, showSystemUi = true, device = Devices.TABLET)
 @Composable
 fun NYEatsCategoriesAndLocationsExpandedPreview() {
     NYEatsTheme {
         CategoriesAndLocationsScreen({}, {}, categories[0])
     }
-}
+}*/
 
-@Preview(showBackground = true, showSystemUi = true, device = Devices.TABLET)
+/*@Preview(showBackground = true, showSystemUi = true, device = Devices.TABLET)
 @Composable
 fun NYEatsLocationsAndDetailsExpandedPreview() {
     NYEatsTheme {
         LocationsAndDetailsScreen({}, categories[0], coffeeShops[2])
     }
-}
+}*/
 
 /*@Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -577,6 +592,7 @@ fun LocationItemPreview() {
         LocationItem(location = coffeeShops[0], {})
     }
 }
+*/
 
 @Preview
 @Composable
@@ -584,4 +600,4 @@ fun ListsPreview() {
     NYEatsTheme {
         LocationsList(list = coffeeShops, {}, modifier = Modifier.fillMaxSize())
     }
-}*/
+}

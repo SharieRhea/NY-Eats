@@ -20,29 +20,29 @@ data class Location(
 object LocationsRepository {
     val coffeeShops = listOf(
         Location(
-            name = R.string.abraco,
-            description = R.string.abraco_description,
-            image = R.drawable.abraco
+            name = R.string.brew_brothers,
+            description = R.string.brew_brothers_description,
+            image = R.drawable.brew_brothers
         ),
         Location(
-            name = R.string.sey_coffee,
-            description = R.string.sey_coffee_description,
-            image = R.drawable.seycoffee
+            name = R.string.daily_grind,
+            description = R.string.daily_grind_description,
+            image = R.drawable.daily_grind
         ),
         Location(
-            name = R.string.mudspot,
-            description = R.string.mudspot_description,
-            image = R.drawable.mudspot
+            name = R.string.latte_lounge,
+            description = R.string.latte_lounge_description,
+            image = R.drawable.latte_lounge
         ),
         Location(
-            name = R.string.devocion,
-            description = R.string.devocion_description,
-            image = R.drawable.devocion
+            name = R.string.maple_cafe,
+            description = R.string.maple_cafe_description,
+            image = R.drawable.maple_cafe
         ),
         Location(
-            name = R.string.felix_roasting_co,
-            description = R.string.felix_roasting_co_description,
-            image = R.drawable.felixroastingco
+            name = R.string.the_roast,
+            description = R.string.the_roast_description,
+            image = R.drawable.the_roast
         )
     )
 
@@ -51,29 +51,29 @@ object LocationsRepository {
      */
     val fastFood = listOf(
         Location(
-            name = R.string.shake_shack,
-            description = R.string.shake_shack_description,
-            image = R.drawable.shakeshack
+            name = R.string.just_burgers,
+            description = R.string.just_burgers_description,
+            image = R.drawable.just_burgers
         ),
         Location(
-            name = R.string.sweetgreen,
-            description = R.string.sweetgreen_description,
-            image = R.drawable.sweetgreen
+            name = R.string.links_famous,
+            description = R.string.links_famous_description,
+            image = R.drawable.links_famous
         ),
         Location(
-            name = R.string.rays_pizza,
-            description = R.string.rays_pizza_description,
-            image = R.drawable.rayspizza
+            name = R.string.wacdonalds,
+            description = R.string.wacdonalds_description,
+            image = R.drawable.wacdonalds
         ),
         Location(
-            name = R.string.wafels_and_dinges,
-            description = R.string.wafels_and_dinges_description,
-            image = R.drawable.wafelsanddinges
+            name = R.string.the_hot_oven,
+            description = R.string.the_hot_oven_description,
+            image = R.drawable.the_hot_oven
         ),
         Location(
-            name = R.string.nathans_famous,
-            description = R.string.nathans_famous_description,
-            image = R.drawable.nathansfamous
+            name = R.string.snack_shack,
+            description = R.string.snack_shack_description,
+            image = R.drawable.snack_shack
         )
     )
 
@@ -82,29 +82,29 @@ object LocationsRepository {
      */
     val restaurants = listOf(
         Location(
-            name = R.string.gage_and_tollner,
-            description = R.string.gage_and_tollner_description,
-            image = R.drawable.gage_tollner
+            name = R.string.the_tower,
+            description = R.string.the_tower_description,
+            image = R.drawable.the_tower
         ),
         Location(
-            name = R.string.crown_shy,
-            description = R.string.crown_shy_description,
-            image = R.drawable.crownshy
+            name = R.string.painted_pavilion,
+            description = R.string.painted_pavilion_description,
+            image = R.drawable.painted_pavilion
         ),
         Location(
-            name = R.string.tatiana,
-            description = R.string.tatiana_description,
-            image = R.drawable.tatiana
+            name = R.string.mellow_crown,
+            description = R.string.mellow_crown_description,
+            image = R.drawable.mellow_crown
         ),
         Location(
-            name = R.string.gramercy_tavern,
-            description = R.string.gramercy_tavern_description,
-            image = R.drawable.gramercy_tavern
+            name = R.string.good_earth,
+            description = R.string.good_earth_description,
+            image = R.drawable.good_earth
         ),
         Location(
-            name = R.string.dhamaka,
-            description = R.string.dhamaka_description,
-            image = R.drawable.dhamaka
+            name = R.string.elementary,
+            description = R.string.elementary_description,
+            image = R.drawable.elementary
         )
     )
 }

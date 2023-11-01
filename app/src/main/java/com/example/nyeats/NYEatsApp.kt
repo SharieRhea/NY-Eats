@@ -43,12 +43,12 @@ import androidx.compose.ui.graphics.ImageShader
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -60,18 +60,7 @@ import com.example.nyeats.model.Location
 import com.example.nyeats.model.LocationsRepository.coffeeShops
 import com.example.nyeats.ui.theme.NYEatsTheme
 
-/*
-    Note:
-        - refactor into multiple files?
-        - replace hardcoded color and dimen values
-        - replace images with free to use
-        - replace names and descriptions
-        - add content descriptions
-        - check accessibility
-        - write tests?
- */
-
-// Initialize a viewModel for all functions to use. todo: better to be passed into functions?
+// Initialize a viewModel for all functions to use.
 val viewModel = NYEatsViewModel()
 
 /**
@@ -88,169 +77,18 @@ enum class ScreenName {
 @Composable
 fun NYEats(
     windowSize: WindowWidthSizeClass,
-    modifier: Modifier = Modifier) {
+    modifier: Modifier = Modifier
+) {
     // Initialize a navHostController for navigation
     val navController: NavHostController = rememberNavController()
-    // Initialize a backStack for backwards navigation
+    // Initialize a backStack for backwards navigation (not used within code)
     val backStackEntry by navController.currentBackStackEntryAsState()
-
     val uiState = viewModel.uiState.collectAsState().value
 
     if (windowSize == WindowWidthSizeClass.Expanded) {
-        NavHost(
-            navController = navController,
-            startDestination = ScreenName.Categories.name,
-            enterTransition = {
-                fadeIn(
-                    animationSpec = tween(
-                        300, easing = LinearEasing
-                    )
-                ) + slideIntoContainer(
-                    animationSpec = tween(300, easing = EaseIn),
-                    towards = AnimatedContentTransitionScope.SlideDirection.Start
-                )
-            },
-            exitTransition = {
-                fadeOut(
-                    animationSpec = tween(
-                        300, easing = LinearEasing
-                    )
-                ) + slideOutOfContainer(
-                    animationSpec = tween(300, easing = EaseOut),
-                    towards = AnimatedContentTransitionScope.SlideDirection.Start
-                )
-            },
-            popEnterTransition = {
-                fadeIn(
-                    animationSpec = tween(
-                        300, easing = LinearEasing
-                    )
-                ) + slideIntoContainer(
-                    animationSpec = tween(300, easing = EaseIn),
-                    towards = AnimatedContentTransitionScope.SlideDirection.End
-                )
-            },
-            popExitTransition = {
-                fadeOut(
-                    animationSpec = tween(
-                        300, easing = LinearEasing
-                    )
-                ) + slideOutOfContainer(
-                    animationSpec = tween(300, easing = EaseIn),
-                    towards = AnimatedContentTransitionScope.SlideDirection.End
-                )
-            },
-            modifier = modifier
-        ) {
-            composable(
-                route = ScreenName.Categories.name,
-            ) {
-                CategoryScreen(
-                    onCategoryClicked = {
-                        viewModel.updateCurrentCategory(it)
-                        navController.navigate(ScreenName.CategoriesAndLocations.name)
-                    },
-                    modifier = Modifier.fillMaxHeight()
-                )
-            }
-            composable(
-                route = ScreenName.CategoriesAndLocations.name,
-            ) {
-                CategoriesAndLocationsScreen(
-                    onCategoryClicked = {
-                        viewModel.updateCurrentCategory(it)
-                    },
-                    onLocationClicked = {
-                        viewModel.updateCurrentLocation(it)
-                        navController.navigate(ScreenName.LocationsAndDetails.name)
-                    },
-                    currentCategory = uiState.currentCategory)
-            }
-            composable(
-                route = ScreenName.LocationsAndDetails.name
-            ) {
-                LocationsAndDetailsScreen(
-                    onLocationClicked = {
-                        viewModel.updateCurrentLocation(it)
-                    },
-                    currentCategory = uiState.currentCategory,
-                    currentLocation = uiState.currentLocation
-                )
-            }
-        }
+        CreateExpandedNavHost(navController = navController, uiState = uiState, modifier)
     } else {
-        NavHost(
-            navController = navController,
-            startDestination = ScreenName.Categories.name,
-            enterTransition = {
-                fadeIn(
-                    animationSpec = tween(
-                        300, easing = LinearEasing
-                    )
-                ) + slideIntoContainer(
-                    animationSpec = tween(300, easing = EaseIn),
-                    towards = AnimatedContentTransitionScope.SlideDirection.Up
-                )
-            },
-            exitTransition = {
-                fadeOut(
-                    animationSpec = tween(
-                        300, easing = LinearEasing
-                    )
-                ) + slideOutOfContainer(
-                    animationSpec = tween(300, easing = EaseOut),
-                    towards = AnimatedContentTransitionScope.SlideDirection.Up
-                )
-            },
-            popEnterTransition = {
-                fadeIn(
-                    animationSpec = tween(
-                        300, easing = LinearEasing
-                    )
-                ) + slideIntoContainer(
-                    animationSpec = tween(300, easing = EaseIn),
-                    towards = AnimatedContentTransitionScope.SlideDirection.Down
-                )
-            },
-            popExitTransition = {
-                fadeOut(
-                    animationSpec = tween(
-                        300, easing = LinearEasing
-                    )
-                ) + slideOutOfContainer(
-                    animationSpec = tween(300, easing = EaseIn),
-                    towards = AnimatedContentTransitionScope.SlideDirection.Down
-                )
-            },
-            modifier = modifier
-        ) {
-            composable(
-                route = ScreenName.Categories.name,
-            ) {
-                CategoryScreen(
-                    onCategoryClicked = {
-                        viewModel.updateCurrentCategory(it)
-                        navController.navigate(ScreenName.Locations.name)
-                    },
-                    modifier = Modifier.fillMaxHeight()
-                )
-            }
-            composable(route = ScreenName.Locations.name) {
-                LocationsScreen(
-                    category = uiState.currentCategory,
-                    onLocationClicked = {
-                        viewModel.updateCurrentLocation(it)
-                        navController.navigate(ScreenName.Detail.name)
-                    },
-                    modifier = Modifier.fillMaxHeight()
-                )
-            }
-            composable(route = ScreenName.Detail.name) {
-                DetailsScreen(
-                    location = uiState.currentLocation
-                )
-            }
-        }
+        CreateNavHost(navController = navController, uiState = uiState, modifier)
     }
 }
 
@@ -262,28 +100,27 @@ fun NYEats(
 fun CategoryItem(
     category: Category,
     onCategoryClicked: (Category) -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Card(
         onClick = { onCategoryClicked(category) },
-        elevation = CardDefaults.cardElevation(10.dp),
-        modifier = Modifier.width(500.dp)
+        elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.card_elevation)),
+        modifier = Modifier.width(dimensionResource(id = R.dimen.category_card_max_width))
     ) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .heightIn(max = 150.dp)
+                .heightIn(max = dimensionResource(id = R.dimen.category_card_max_height))
         ) {
             Image(
                 painter = painterResource(id = category.backgroundImage),
-                contentDescription = null,
+                contentDescription = stringResource(id = category.contentDescription),
                 contentScale= ContentScale.Crop,
                 modifier = Modifier.fillMaxWidth()
             )
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color = Color.Black.copy(alpha = 0.5f))
+                    .background(color = colorResource(id = R.color.black_transparent))
             )
             Text(
                 text = stringResource(id = category.name),
@@ -305,15 +142,13 @@ fun CategoriesList(
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.SpaceEvenly,
-        contentPadding = PaddingValues(20.dp),
+        contentPadding = PaddingValues(dimensionResource(id = R.dimen.list_item_padding)),
         modifier = modifier
     ) {
         items(list) {
             CategoryItem(
                 category = it,
                 onCategoryClicked = onClick,
-                modifier = Modifier
-                    .fillMaxWidth(),
             )
         }
     }
@@ -338,12 +173,14 @@ fun CategoryScreen(
     }
 }
 
+/**
+ * Displays both the Categories Screen and Locations Screen for expanded devices.
+ */
 @Composable
 fun CategoriesAndLocationsScreen(
     onCategoryClicked: (Category) -> Unit,
     onLocationClicked: (Location) -> Unit,
     currentCategory: Category,
-    modifier: Modifier = Modifier
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceAround,
@@ -364,6 +201,9 @@ fun CategoriesAndLocationsScreen(
     }
 }
 
+/**
+ * Displays both the Locations Screen and the Details Screen for expanded devices.
+ */
 @Composable
 fun LocationsAndDetailsScreen(
     onLocationClicked: (Location) -> Unit,
@@ -380,11 +220,9 @@ fun LocationsAndDetailsScreen(
                 .fillMaxHeight()
                 .weight(1f)
         )
-        Spacer(modifier = Modifier.padding(20.dp))
+        Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.details_screen_spacing)))
         DetailsScreen(
-            location = currentLocation,
-            modifier = Modifier
-                .weight(1f)
+            location = currentLocation
         )
     }
 }
@@ -415,7 +253,6 @@ fun LocationsScreen(
 @Composable
 fun DetailsScreen(
     location: Location,
-    modifier: Modifier = Modifier
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.details_screen_spacing)),
@@ -423,11 +260,11 @@ fun DetailsScreen(
     ) {
         Image(
             painter = painterResource(id = location.image),
-            contentDescription = null,
+            contentDescription = stringResource(id = location.contentDescription),
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(max = 500.dp)
+                .heightIn(max = dimensionResource(id = R.dimen.category_card_max_width))
         )
         Text(
             text = stringResource(id = location.name),
@@ -459,7 +296,7 @@ fun LocationsList(
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.SpaceEvenly,
-        contentPadding = PaddingValues(20.dp),
+        contentPadding = PaddingValues(dimensionResource(id = R.dimen.list_item_padding)),
         modifier = modifier
     ) {
         items(list) {
@@ -479,15 +316,14 @@ fun LocationsList(
 fun LocationItem(
     location: Location,
     onLocationClicked: (Location) -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Card(
         onClick = { onLocationClicked(location) },
-        elevation = CardDefaults.cardElevation(10.dp),
+        elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.card_elevation)),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
         modifier = Modifier
-            .heightIn(max = 100.dp)
-            .width(350.dp)
+            .heightIn(max = dimensionResource(id = R.dimen.location_card_max_height))
+            .width(dimensionResource(id = R.dimen.location_card_max_width))
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -506,19 +342,21 @@ fun LocationItem(
                     Canvas(
                         onDraw = {
                             withTransform({
+                                // Scale by half to make image size more appropriate
                                 scale(0.5f, 0.5f)
                                 translate(left = -size.width * 1.15f, top = -size.height * 1.15f)
                             }) {
+                                // Center offset is half the size of the image to place center of the circle at the center of the image
                                 drawCircle(imageBrush, radius = size.width, center = Offset(x = size.width / 2, y = size.width / 2))
                             }
                         },
-                        modifier = Modifier.size(500.dp)
+                        modifier = Modifier.size(dimensionResource(id = R.dimen.location_card_image_size))
                     )
                 }
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Spacer(modifier = Modifier.padding(80.dp))
+                    Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.location_text_padding)))
                     Text(
                         text = stringResource(id = location.name),
                         style = MaterialTheme.typography.titleLarge,
@@ -526,6 +364,174 @@ fun LocationItem(
                     )
                 }
             }
+        }
+    }
+}
+
+/**
+ * Creates a NavHost with transition animations for Expanded width devices.
+ */
+@Composable
+fun CreateExpandedNavHost(navController: NavHostController, uiState: NYEatsUiState, modifier: Modifier) {
+    NavHost(
+        navController = navController,
+        startDestination = ScreenName.Categories.name,
+        enterTransition = {
+            fadeIn(
+                animationSpec = tween(
+                    300, easing = LinearEasing
+                )
+            ) + slideIntoContainer(
+                animationSpec = tween(300, easing = EaseIn),
+                towards = AnimatedContentTransitionScope.SlideDirection.Start
+            )
+        },
+        exitTransition = {
+            fadeOut(
+                animationSpec = tween(
+                    300, easing = LinearEasing
+                )
+            ) + slideOutOfContainer(
+                animationSpec = tween(300, easing = EaseOut),
+                towards = AnimatedContentTransitionScope.SlideDirection.Start
+            )
+        },
+        popEnterTransition = {
+            fadeIn(
+                animationSpec = tween(
+                    300, easing = LinearEasing
+                )
+            ) + slideIntoContainer(
+                animationSpec = tween(300, easing = EaseIn),
+                towards = AnimatedContentTransitionScope.SlideDirection.End
+            )
+        },
+        popExitTransition = {
+            fadeOut(
+                animationSpec = tween(
+                    300, easing = LinearEasing
+                )
+            ) + slideOutOfContainer(
+                animationSpec = tween(300, easing = EaseIn),
+                towards = AnimatedContentTransitionScope.SlideDirection.End
+            )
+        },
+        modifier = modifier
+    ) {
+        composable(
+            route = ScreenName.Categories.name,
+        ) {
+            CategoryScreen(
+                onCategoryClicked = {
+                    viewModel.updateCurrentCategory(it)
+                    navController.navigate(ScreenName.CategoriesAndLocations.name)
+                },
+                modifier = Modifier.fillMaxHeight()
+            )
+        }
+        composable(
+            route = ScreenName.CategoriesAndLocations.name,
+        ) {
+            CategoriesAndLocationsScreen(
+                onCategoryClicked = {
+                    viewModel.updateCurrentCategory(it)
+                },
+                onLocationClicked = {
+                    viewModel.updateCurrentLocation(it)
+                    navController.navigate(ScreenName.LocationsAndDetails.name)
+                },
+                currentCategory = uiState.currentCategory
+            )
+        }
+        composable(
+            route = ScreenName.LocationsAndDetails.name
+        ) {
+            LocationsAndDetailsScreen(
+                onLocationClicked = {
+                    viewModel.updateCurrentLocation(it)
+                },
+                currentCategory = uiState.currentCategory,
+                currentLocation = uiState.currentLocation
+            )
+        }
+    }
+}
+
+/**
+ * Creates a NavHost with transition animations for Compact and Medium width devices.
+ */
+@Composable
+fun CreateNavHost(navController: NavHostController, uiState: NYEatsUiState, modifier: Modifier) {
+    NavHost(
+        navController = navController,
+        startDestination = ScreenName.Categories.name,
+        enterTransition = {
+            fadeIn(
+                animationSpec = tween(
+                    300, easing = LinearEasing
+                )
+            ) + slideIntoContainer(
+                animationSpec = tween(300, easing = EaseIn),
+                towards = AnimatedContentTransitionScope.SlideDirection.Up
+            )
+        },
+        exitTransition = {
+            fadeOut(
+                animationSpec = tween(
+                    300, easing = LinearEasing
+                )
+            ) + slideOutOfContainer(
+                animationSpec = tween(300, easing = EaseOut),
+                towards = AnimatedContentTransitionScope.SlideDirection.Up
+            )
+        },
+        popEnterTransition = {
+            fadeIn(
+                animationSpec = tween(
+                    300, easing = LinearEasing
+                )
+            ) + slideIntoContainer(
+                animationSpec = tween(300, easing = EaseIn),
+                towards = AnimatedContentTransitionScope.SlideDirection.Down
+            )
+        },
+        popExitTransition = {
+            fadeOut(
+                animationSpec = tween(
+                    300, easing = LinearEasing
+                )
+            ) + slideOutOfContainer(
+                animationSpec = tween(300, easing = EaseIn),
+                towards = AnimatedContentTransitionScope.SlideDirection.Down
+            )
+        },
+        modifier = modifier
+    ) {
+        composable(
+            route = ScreenName.Categories.name,
+        ) {
+            CategoryScreen(
+                onCategoryClicked = {
+                    viewModel.updateCurrentCategory(it)
+                    navController.navigate(ScreenName.Locations.name)
+                },
+                modifier = Modifier.fillMaxHeight()
+            )
+        }
+        composable(route = ScreenName.Locations.name) {
+            LocationsScreen(
+                category = uiState.currentCategory,
+                onLocationClicked = {
+                    viewModel.updateCurrentLocation(it)
+                    navController.navigate(ScreenName.Detail.name)
+                },
+                modifier = Modifier.fillMaxHeight()
+            )
+        }
+        composable(route = ScreenName.Detail.name) {
+            DetailsScreen(
+                location = uiState.currentLocation
+            )
         }
     }
 }

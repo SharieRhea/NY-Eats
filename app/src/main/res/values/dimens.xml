@@ -3,4 +3,12 @@
     <dimen name="category_card_inner_padding">20dp</dimen>
     <dimen name="item_spacing">16dp</dimen>
     <dimen name="details_screen_spacing">24dp</dimen>
+    <dimen name="card_elevation">10dp</dimen>
+    <dimen name="category_card_max_width">500dp</dimen>
+    <dimen name="category_card_max_height">150dp</dimen>
+    <dimen name="location_card_max_height">100dp</dimen>
+    <dimen name="location_card_max_width"> 350dp</dimen>
+    <dimen name="list_item_padding">20dp</dimen>
+    <dimen name="location_card_image_size">500dp</dimen>
+    <dimen name="location_text_padding">80dp</dimen>
 </resources>

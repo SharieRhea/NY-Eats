@@ -14,6 +14,7 @@ import com.example.nyeats.model.LocationsRepository.restaurants
 data class Category(
     @StringRes val name: Int,
     @DrawableRes val backgroundImage: Int,
+    @StringRes val contentDescription: Int,
     val list: List<Location>
 )
 
@@ -25,16 +26,19 @@ object CategoriesRepository {
         Category(
             name = R.string.coffee_shops,
             backgroundImage = R.drawable.coffee_shops,
+            contentDescription = R.string.coffee_shops_content_description,
             list = coffeeShops
         ),
         Category(
             name = R.string.fast_food,
             backgroundImage = R.drawable.fast_food,
+            contentDescription = R.string.fast_food_content_description,
             list = fastFood
         ),
         Category(
             name = R.string.restaurants,
             backgroundImage = R.drawable.restaurant,
+            contentDescription = R.string.restaurants_content_description,
             list = restaurants
         )
     )

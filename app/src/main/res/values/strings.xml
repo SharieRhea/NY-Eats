@@ -40,4 +40,24 @@
     <string name="mellow_crown_description">Mellow Crown is a chill and relaxed cafe, serving a range of beverages from coffee to smoothies and providing a peaceful atmosphere for patrons.</string>
     <string name="good_earth_description">Good Earth is an environmentally-conscious restaurant known for its commitment to using sustainable and locally-sourced ingredients in their menu items.</string>
     <string name="elementary_description">Elementary is a modern, minimalist restaurant that focuses on serving simple yet impeccably prepared dishes, often with a seasonal and contemporary twist.</string>
+
+    <string name="brew_brothers_content_description">A warmly lit coffee shop with vintage lights and a white brick wall full of shelves. A coffee bean grinder and espresso machine sit on a wooden counter in the front of the frame. An employee makes a coffee behind the counter.</string>
+    <string name="daily_grind_content_description">A metal hand-operated coffee bean grinder sits on a wooden shelf next to a bag of coffee beans labeled \"Pronova\"</string>
+    <string name="latte_lounge_content_description">A dimly lit lounge or café. An employee carries a candle in a glass bowl.</string>
+    <string name="maple_cafe_content_description">A café with high vaulted ceilings and a wall of windows. There is lots of green foliage as well as a modern lamp. Two people lounge against a counter with coffee pots.</string>
+    <string name="the_roast_content_description">Two clear glasses filled with water sit on a wooden table next to the edge of a glass flower vase.</string>
+    <string name="just_burgers_content_description">A counter full of burgers that are being prepared. A worker squeezes ketchup from a red squeeze bottle onto the open burgers. Each burger is on a piece of aluminum foil.</string>
+    <string name="links_famous_content_description">The top of a food stand at a local fair. The signage for the stall is white with green and red lettering, reading "World Famous Frankfurters since 1916". Small American flags wave on top of the food stall.</string>
+    <string name="wacdonalds_content_description">Workers in gray shirts prepare food behind a counter. The counter has registers for ordering food and table signs with numbers on them.</string>
+    <string name="snack_shack_content_description">A recessed entrance to a food establishment. Much of the interior is brown. A "Pick Up Here" sign can be seen, along with a drink machine and a few employees wearing masks.</string>
+    <string name="the_hot_oven_content_description">A pepperoni pizza sits on a metal tray in a line of other pizzas at the edge of the frame.</string>
+    <string name="the_tower_content_description">A fancy looking meal in the center of a white plate. There are three strips of salmon, topped with pea shoots and a lemon wedge.</string>
+    <string name="painted_pavilion_content_description">A booth at a restaurant surrounded by some flourishing plants in terracotta pots. The booth is nicely set with silverware. The booth also has a small flower vase with yellow flowers.</string>
+    <string name="mellow_crown_content_description">A posh restaurant atmosphere. There are two arched windows overlooking a street. Multiple tables are scattered throughout the interior. One of the tables has yellow and brown armchairs, the rest have wooden chairs. There is a mirror against the back wall.</string>
+    <string name="good_earth_content_description">An outdoor seating area with lots of wooden tables and chairs set against a white brick building. There are stairs that lead to an upper level the overhangs a bar area. A few people sit to eat and work on laptops.</string>
+    <string name="elementary_content_description">An employee in a blue shirt places a flower vase onto a table that is set with silverware and cups. Other tables are visible, all with blue chairs. A red cone-shaped light fixture hangs above each table.</string>
+
+    <string name="coffee_shops_content_description">Steam from a hot cup of coffee in front of a brown background.</string>
+    <string name="fast_food_content_description">One slice of a pizza is pulled out slightly from the pie next to a vine of tomatoes.</string>
+    <string name="restaurants_content_description">Two people sitting at a restaurant table clink glasses of red wine.</string>
 </resources>

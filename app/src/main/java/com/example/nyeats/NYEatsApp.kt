@@ -100,6 +100,8 @@ fun NYEats(
 fun CategoryItem(
     category: Category,
     onCategoryClicked: (Category) -> Unit,
+    uiState: NYEatsUiState,
+    highlighted: Boolean,
 ) {
     Card(
         onClick = { onCategoryClicked(category) },
@@ -120,7 +122,7 @@ fun CategoryItem(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color = colorResource(id = R.color.black_transparent))
+                    .background( color = if (highlighted && category == uiState.currentCategory) colorResource(id = R.color.black_transparent_44) else colorResource(id = R.color.black_transparent_77))
             )
             Text(
                 text = stringResource(id = category.name),
@@ -138,6 +140,8 @@ fun CategoryItem(
 fun CategoriesList(
     list: List<Category>,
     onClick: (Category) -> Unit,
+    uiState: NYEatsUiState,
+    highlighted: Boolean,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -149,6 +153,8 @@ fun CategoriesList(
             CategoryItem(
                 category = it,
                 onCategoryClicked = onClick,
+                uiState = uiState,
+                highlighted = highlighted
             )
         }
     }
@@ -160,6 +166,8 @@ fun CategoriesList(
 @Composable
 fun CategoryScreen(
     onCategoryClicked: (Category) -> Unit,
+    uiState: NYEatsUiState,
+    highlighted: Boolean,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -168,6 +176,8 @@ fun CategoryScreen(
         CategoriesList(
             list = categories,
             onClick = onCategoryClicked,
+            uiState = uiState,
+            highlighted = highlighted,
             modifier = modifier
         )
     }
@@ -180,6 +190,9 @@ fun CategoryScreen(
 fun CategoriesAndLocationsScreen(
     onCategoryClicked: (Category) -> Unit,
     onLocationClicked: (Location) -> Unit,
+    uiState: NYEatsUiState,
+    highlightedLocations: Boolean,
+    highlightedCategories: Boolean,
     currentCategory: Category,
 ) {
     Row(
@@ -188,6 +201,8 @@ fun CategoriesAndLocationsScreen(
     ) {
         CategoryScreen(
             onCategoryClicked = onCategoryClicked,
+            highlighted = highlightedCategories,
+            uiState = uiState,
             modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f)
@@ -195,6 +210,8 @@ fun CategoriesAndLocationsScreen(
         LocationsScreen(
             category = currentCategory,
             onLocationClicked = onLocationClicked,
+            uiState = uiState,
+            highlighted = highlightedLocations,
             modifier = Modifier
                 .fillMaxHeight()
         )
@@ -208,7 +225,9 @@ fun CategoriesAndLocationsScreen(
 fun LocationsAndDetailsScreen(
     onLocationClicked: (Location) -> Unit,
     currentCategory: Category,
-    currentLocation: Location
+    currentLocation: Location,
+    uiState: NYEatsUiState,
+    highlighted: Boolean
 ) {
     Row(
         modifier = Modifier.fillMaxWidth()
@@ -216,6 +235,8 @@ fun LocationsAndDetailsScreen(
         LocationsScreen(
             category = currentCategory,
             onLocationClicked = onLocationClicked,
+            uiState = uiState,
+            highlighted = highlighted,
             modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f)
@@ -234,6 +255,8 @@ fun LocationsAndDetailsScreen(
 fun LocationsScreen(
     category: Category,
     onLocationClicked: (Location) -> Unit,
+    uiState: NYEatsUiState,
+    highlighted: Boolean,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -242,6 +265,8 @@ fun LocationsScreen(
         LocationsList(
             list = category.list,
             onClick = onLocationClicked,
+            uiState = uiState,
+            highlighted = highlighted,
             modifier = modifier
         )
     }
@@ -292,6 +317,8 @@ fun DetailsScreen(
 fun LocationsList(
     list: List<Location>,
     onClick: (Location) -> Unit,
+    uiState: NYEatsUiState,
+    highlighted: Boolean,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -302,7 +329,9 @@ fun LocationsList(
         items(list) {
             LocationItem(
                 location = it,
-                onLocationClicked = onClick
+                onLocationClicked = onClick,
+                highlighted = highlighted,
+                uiState = uiState
             )
         }
     }
@@ -316,11 +345,13 @@ fun LocationsList(
 fun LocationItem(
     location: Location,
     onLocationClicked: (Location) -> Unit,
+    uiState: NYEatsUiState,
+    highlighted: Boolean
 ) {
     Card(
         onClick = { onLocationClicked(location) },
         elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.card_elevation)),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+        colors = if (highlighted && location == uiState.currentLocation) CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer) else CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
         modifier = Modifier
             .heightIn(max = dimensionResource(id = R.dimen.location_card_max_height))
             .width(dimensionResource(id = R.dimen.location_card_max_width))
@@ -426,6 +457,8 @@ fun CreateExpandedNavHost(navController: NavHostController, uiState: NYEatsUiSta
                     viewModel.updateCurrentCategory(it)
                     navController.navigate(ScreenName.CategoriesAndLocations.name)
                 },
+                uiState = uiState,
+                highlighted = false,
                 modifier = Modifier.fillMaxHeight()
             )
         }
@@ -440,7 +473,10 @@ fun CreateExpandedNavHost(navController: NavHostController, uiState: NYEatsUiSta
                     viewModel.updateCurrentLocation(it)
                     navController.navigate(ScreenName.LocationsAndDetails.name)
                 },
-                currentCategory = uiState.currentCategory
+                currentCategory = uiState.currentCategory,
+                uiState = uiState,
+                highlightedLocations = false,
+                highlightedCategories = true
             )
         }
         composable(
@@ -451,7 +487,9 @@ fun CreateExpandedNavHost(navController: NavHostController, uiState: NYEatsUiSta
                     viewModel.updateCurrentLocation(it)
                 },
                 currentCategory = uiState.currentCategory,
-                currentLocation = uiState.currentLocation
+                currentLocation = uiState.currentLocation,
+                uiState = uiState,
+                highlighted = true
             )
         }
     }
@@ -515,6 +553,8 @@ fun CreateNavHost(navController: NavHostController, uiState: NYEatsUiState, modi
                     viewModel.updateCurrentCategory(it)
                     navController.navigate(ScreenName.Locations.name)
                 },
+                uiState = uiState,
+                highlighted = false,
                 modifier = Modifier.fillMaxHeight()
             )
         }
@@ -525,6 +565,8 @@ fun CreateNavHost(navController: NavHostController, uiState: NYEatsUiState, modi
                     viewModel.updateCurrentLocation(it)
                     navController.navigate(ScreenName.Detail.name)
                 },
+                uiState = uiState,
+                highlighted = false,
                 modifier = Modifier.fillMaxHeight()
             )
         }
@@ -604,6 +646,6 @@ fun LocationItemPreview() {
 @Composable
 fun ListsPreview() {
     NYEatsTheme {
-        LocationsList(list = coffeeShops, {}, modifier = Modifier.fillMaxSize())
+        LocationsList(list = coffeeShops, {}, modifier = Modifier.fillMaxSize(), uiState = NYEatsUiState(), highlighted = false)
     }
 }

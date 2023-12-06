@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
@@ -43,12 +44,14 @@ import androidx.compose.ui.graphics.ImageShader
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.os.ConfigurationCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -83,13 +86,9 @@ fun NYEats(
     val navController: NavHostController = rememberNavController()
     // Initialize a backStack for backwards navigation (not used within code)
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val uiState = viewModel.uiState.collectAsState().value
+    val uiState by viewModel.uiState.collectAsState()
 
-    if (windowSize == WindowWidthSizeClass.Expanded) {
-        CreateExpandedNavHost(navController = navController, uiState = uiState, modifier)
-    } else {
-        CreateNavHost(navController = navController, uiState = uiState, modifier)
-    }
+    CreateNavHost(navController = navController, uiState = uiState, windowSize = windowSize, modifier)
 }
 
 /**
@@ -106,7 +105,7 @@ fun CategoryItem(
     Card(
         onClick = { onCategoryClicked(category) },
         elevation = CardDefaults.cardElevation(dimensionResource(id = R.dimen.card_elevation)),
-        modifier = Modifier.width(dimensionResource(id = R.dimen.category_card_max_width))
+        modifier = Modifier.widthIn(max = dimensionResource(id = R.dimen.category_card_max_width))
     ) {
         Box(
             contentAlignment = Alignment.Center,
@@ -122,7 +121,11 @@ fun CategoryItem(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background( color = if (highlighted && category == uiState.currentCategory) colorResource(id = R.color.black_transparent_44) else colorResource(id = R.color.black_transparent_77))
+                    .background(
+                        color = if (highlighted && category == uiState.currentCategory) colorResource(
+                            id = R.color.black_transparent_44
+                        ) else colorResource(id = R.color.black_transparent_77)
+                    )
             )
             Text(
                 text = stringResource(id = category.name),
@@ -145,7 +148,7 @@ fun CategoriesList(
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        verticalArrangement = Arrangement.SpaceEvenly,
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.category_card_spacing), Alignment.CenterVertically),
         contentPadding = PaddingValues(dimensionResource(id = R.dimen.list_item_padding)),
         modifier = modifier
     ) {
@@ -196,7 +199,7 @@ fun CategoriesAndLocationsScreen(
     currentCategory: Category,
 ) {
     Row(
-        horizontalArrangement = Arrangement.SpaceAround,
+        horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier.fillMaxSize()
     ) {
         CategoryScreen(
@@ -204,8 +207,8 @@ fun CategoriesAndLocationsScreen(
             highlighted = highlightedCategories,
             uiState = uiState,
             modifier = Modifier
-                .fillMaxHeight()
                 .weight(1f)
+                .fillMaxHeight()
         )
         LocationsScreen(
             category = currentCategory,
@@ -213,6 +216,7 @@ fun CategoriesAndLocationsScreen(
             uiState = uiState,
             highlighted = highlightedLocations,
             modifier = Modifier
+                .weight(1f)
                 .fillMaxHeight()
         )
     }
@@ -227,7 +231,7 @@ fun LocationsAndDetailsScreen(
     currentCategory: Category,
     currentLocation: Location,
     uiState: NYEatsUiState,
-    highlighted: Boolean
+    highlighted: Boolean,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth()
@@ -242,9 +246,7 @@ fun LocationsAndDetailsScreen(
                 .weight(1f)
         )
         Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.details_screen_spacing)))
-        DetailsScreen(
-            location = currentLocation
-        )
+        DetailsScreen(location = currentLocation)
     }
 }
 
@@ -290,23 +292,29 @@ fun DetailsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(max = dimensionResource(id = R.dimen.category_card_max_width))
+                .weight(1f)
         )
-        Text(
-            text = stringResource(id = location.name),
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.padding(start = dimensionResource(id = R.dimen.details_screen_spacing))
-        )
-        Text(
-            text = stringResource(id = location.description),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier
-                .padding(
-                    start = dimensionResource(id = R.dimen.details_screen_spacing),
-                    end = dimensionResource(id = R.dimen.details_screen_spacing)
-                )
-        )
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = stringResource(id = location.name),
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier
+                    .padding(start = dimensionResource(id = R.dimen.details_screen_spacing))
+            )
+            Text(
+                text = stringResource(id = location.description),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier
+                    .padding(
+                        start = dimensionResource(id = R.dimen.details_screen_spacing),
+                        end = dimensionResource(id = R.dimen.details_screen_spacing)
+                    )
+            )
+        }
     }
 }
 
@@ -322,7 +330,7 @@ fun LocationsList(
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        verticalArrangement = Arrangement.SpaceEvenly,
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.category_card_spacing)),
         contentPadding = PaddingValues(dimensionResource(id = R.dimen.list_item_padding)),
         modifier = modifier
     ) {
@@ -399,107 +407,12 @@ fun LocationItem(
     }
 }
 
-/**
- * Creates a NavHost with transition animations for Expanded width devices.
- */
-@Composable
-fun CreateExpandedNavHost(navController: NavHostController, uiState: NYEatsUiState, modifier: Modifier) {
-    NavHost(
-        navController = navController,
-        startDestination = ScreenName.Categories.name,
-        enterTransition = {
-            fadeIn(
-                animationSpec = tween(
-                    300, easing = LinearEasing
-                )
-            ) + slideIntoContainer(
-                animationSpec = tween(300, easing = EaseIn),
-                towards = AnimatedContentTransitionScope.SlideDirection.Start
-            )
-        },
-        exitTransition = {
-            fadeOut(
-                animationSpec = tween(
-                    300, easing = LinearEasing
-                )
-            ) + slideOutOfContainer(
-                animationSpec = tween(300, easing = EaseOut),
-                towards = AnimatedContentTransitionScope.SlideDirection.Start
-            )
-        },
-        popEnterTransition = {
-            fadeIn(
-                animationSpec = tween(
-                    300, easing = LinearEasing
-                )
-            ) + slideIntoContainer(
-                animationSpec = tween(300, easing = EaseIn),
-                towards = AnimatedContentTransitionScope.SlideDirection.End
-            )
-        },
-        popExitTransition = {
-            fadeOut(
-                animationSpec = tween(
-                    300, easing = LinearEasing
-                )
-            ) + slideOutOfContainer(
-                animationSpec = tween(300, easing = EaseIn),
-                towards = AnimatedContentTransitionScope.SlideDirection.End
-            )
-        },
-        modifier = modifier
-    ) {
-        composable(
-            route = ScreenName.Categories.name,
-        ) {
-            CategoryScreen(
-                onCategoryClicked = {
-                    viewModel.updateCurrentCategory(it)
-                    navController.navigate(ScreenName.CategoriesAndLocations.name)
-                },
-                uiState = uiState,
-                highlighted = false,
-                modifier = Modifier.fillMaxHeight()
-            )
-        }
-        composable(
-            route = ScreenName.CategoriesAndLocations.name,
-        ) {
-            CategoriesAndLocationsScreen(
-                onCategoryClicked = {
-                    viewModel.updateCurrentCategory(it)
-                },
-                onLocationClicked = {
-                    viewModel.updateCurrentLocation(it)
-                    navController.navigate(ScreenName.LocationsAndDetails.name)
-                },
-                currentCategory = uiState.currentCategory,
-                uiState = uiState,
-                highlightedLocations = false,
-                highlightedCategories = true
-            )
-        }
-        composable(
-            route = ScreenName.LocationsAndDetails.name
-        ) {
-            LocationsAndDetailsScreen(
-                onLocationClicked = {
-                    viewModel.updateCurrentLocation(it)
-                },
-                currentCategory = uiState.currentCategory,
-                currentLocation = uiState.currentLocation,
-                uiState = uiState,
-                highlighted = true
-            )
-        }
-    }
-}
 
 /**
- * Creates a NavHost with transition animations for Compact and Medium width devices.
+ * Creates a NavHost with transition animations.
  */
 @Composable
-fun CreateNavHost(navController: NavHostController, uiState: NYEatsUiState, modifier: Modifier) {
+fun CreateNavHost(navController: NavHostController, uiState: NYEatsUiState, windowSize: WindowWidthSizeClass, modifier: Modifier) {
     NavHost(
         navController = navController,
         startDestination = ScreenName.Categories.name,
@@ -559,21 +472,78 @@ fun CreateNavHost(navController: NavHostController, uiState: NYEatsUiState, modi
             )
         }
         composable(route = ScreenName.Locations.name) {
-            LocationsScreen(
-                category = uiState.currentCategory,
-                onLocationClicked = {
-                    viewModel.updateCurrentLocation(it)
-                    navController.navigate(ScreenName.Detail.name)
-                },
-                uiState = uiState,
-                highlighted = false,
-                modifier = Modifier.fillMaxHeight()
-            )
+            if (windowSize != WindowWidthSizeClass.Expanded) {
+                LocationsScreen(
+                    category = uiState.currentCategory,
+                    onLocationClicked = {
+                        viewModel.updateCurrentLocation(it)
+                        navController.navigate(ScreenName.Detail.name)
+                    },
+                    uiState = uiState,
+                    highlighted = false,
+                    modifier = Modifier.fillMaxHeight()
+                )
+            }
+            else
+                navController.navigate(ScreenName.CategoriesAndLocations.name) {
+                    //popUpTo(ScreenName.Categories.name)
+                }
+            ConfigurationCompat.getLocales(LocalConfiguration.current)[0]
         }
         composable(route = ScreenName.Detail.name) {
-            DetailsScreen(
-                location = uiState.currentLocation
-            )
+            if (windowSize != WindowWidthSizeClass.Expanded) {
+                DetailsScreen(location = uiState.currentLocation)
+            }
+            else
+                navController.navigate(ScreenName.LocationsAndDetails.name)
+            ConfigurationCompat.getLocales(LocalConfiguration.current)[0]
+        }
+        composable(
+            route = ScreenName.CategoriesAndLocations.name,
+        ) {
+            if (windowSize == WindowWidthSizeClass.Expanded) {
+                CategoriesAndLocationsScreen(
+                    onCategoryClicked = {
+                        viewModel.updateCurrentCategory(it)
+                    },
+                    onLocationClicked = {
+                        viewModel.updateCurrentLocation(it)
+                        navController.navigate(ScreenName.LocationsAndDetails.name) {
+                            popUpTo(ScreenName.Categories.name)
+                        }
+                    },
+                    currentCategory = uiState.currentCategory,
+                    uiState = uiState,
+                    highlightedLocations = false,
+                    highlightedCategories = true
+                )
+            }
+            else
+                navController.navigate(ScreenName.Locations.name) {
+                   // popUpTo(ScreenName.Categories.name)
+                }
+            ConfigurationCompat.getLocales(LocalConfiguration.current)[0]
+        }
+        composable(
+            route = ScreenName.LocationsAndDetails.name
+        ) {
+            if (windowSize == WindowWidthSizeClass.Expanded) {
+                LocationsAndDetailsScreen(
+                    onLocationClicked = {
+                        viewModel.updateCurrentLocation(it)
+                    },
+                    currentCategory = uiState.currentCategory,
+                    currentLocation = uiState.currentLocation,
+                    uiState = uiState,
+                    highlighted = true,
+                )
+            }
+            else {
+                navController.navigate(ScreenName.Detail.name) {
+                    popUpTo(ScreenName.Locations.name)
+                }
+            }
+            ConfigurationCompat.getLocales(LocalConfiguration.current)[0]
         }
     }
 }
@@ -598,7 +568,7 @@ fun NYEatsExpandedPreview() {
 @Composable
 fun NYEatsCategoriesAndLocationsExpandedPreview() {
     NYEatsTheme {
-        CategoriesAndLocationsScreen({}, {}, categories[0])
+        CategoriesAndLocationsScreen({}, {}, uiState = viewModel.uiState.value, false, true, categories[0])
     }
 }*/
 

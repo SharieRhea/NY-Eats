@@ -7,7 +7,8 @@
     <dimen name="category_card_max_width">500dp</dimen>
     <dimen name="category_card_max_height">150dp</dimen>
     <dimen name="location_card_max_height">100dp</dimen>
-    <dimen name="location_card_max_width"> 350dp</dimen>
+    <dimen name="location_card_max_width">350dp</dimen>
+    <dimen name="category_card_spacing">48dp</dimen>
     <dimen name="list_item_padding">20dp</dimen>
     <dimen name="location_card_image_size">500dp</dimen>
     <dimen name="location_text_padding">80dp</dimen>
